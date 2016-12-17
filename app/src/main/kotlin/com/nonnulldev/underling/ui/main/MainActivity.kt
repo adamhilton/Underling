@@ -16,14 +16,15 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    @BindView(R.id.data)
-    lateinit var tvData: TextView
+    @BindView(R.id.tvLevel)
+    lateinit var tvLevel: TextView
 
     @Inject
     lateinit protected var viewModel: MainScreenViewModel
 
-    lateinit private var subscriptions: CompositeDisposable
     lateinit private var mainScreenComponent: MainScreenComponent
+
+    private var level: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,39 +35,33 @@ class MainActivity : AppCompatActivity() {
         initMainScreenComponent()
         mainScreenComponent.inject(this)
 
-        subscriptions = CompositeDisposable()
-
-        initBindings()
+        initUi()
     }
 
-    private fun initBindings() {
-        subscriptions.addAll(
-                viewModel.dataObservable()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe { it -> showData(it) }
-        )
+    private fun initUi() {
+        updateLevel()
     }
 
+    private fun updateLevel() {
+        tvLevel.text = "$level"
+    }
+    
     private fun initMainScreenComponent() {
         mainScreenComponent = DaggerMainScreenComponent.builder()
                 .appComponent(UnderlingApp.appComponent)
                 .build()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        subscriptions.clear()
+    @OnClick(R.id.btnRemoveLevel)
+    fun onRemoveLevelButtonClicked() {
+        level -= 1
+        initUi()
     }
 
-    @OnClick(R.id.btnGetData)
-    fun getDataButtonClicked() {
-        subscriptions.add(
-            viewModel.loadData().subscribe()
-        )
+    @OnClick(R.id.btnAddLevel)
+    fun onAddLevelButtonClicked() {
+        level += 1
+        initUi()
     }
-    
-    private fun showData(data: String) {
-        tvData.text = data
-    }
+
 }
