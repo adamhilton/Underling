@@ -5,7 +5,7 @@ import android.support.annotation.CallSuper
 import com.nonnulldev.underling.injection.component.AppComponent
 import com.nonnulldev.underling.injection.component.DaggerAppComponent
 
-open class App : Application() {
+open class UnderlingApp : Application() {
 
     companion object {
         @JvmStatic lateinit  var appComponent: AppComponent

@@ -8,9 +8,10 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import com.nonnulldev.underling.App
+import com.nonnulldev.underling.UnderlingApp
 import com.nonnulldev.underling.R
 import com.nonnulldev.underling.injection.component.DaggerMainScreenComponent
+import com.nonnulldev.underling.injection.component.MainScreenComponent
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     lateinit protected var viewModel: MainScreenViewModel
 
     lateinit private var subscriptions: CompositeDisposable
+    lateinit private var mainScreenComponent: MainScreenComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         ButterKnife.bind(this)
 
         initMainScreenComponent()
+        mainScreenComponent.inject(this)
 
         subscriptions = CompositeDisposable()
 
@@ -45,10 +48,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initMainScreenComponent() {
-        DaggerMainScreenComponent.builder()
-                .appComponent(App.appComponent)
+        mainScreenComponent = DaggerMainScreenComponent.builder()
+                .appComponent(UnderlingApp.appComponent)
                 .build()
-                .inject(this)
     }
 
     override fun onDestroy() {
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         subscriptions.clear()
     }
 
-    @OnClick(R.id.get_data_button)
+    @OnClick(R.id.btnGetData)
     fun getDataButtonClicked() {
         subscriptions.add(
             viewModel.loadData().subscribe()
