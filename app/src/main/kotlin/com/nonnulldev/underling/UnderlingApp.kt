@@ -4,6 +4,7 @@ import android.app.Application
 import android.support.annotation.CallSuper
 import com.nonnulldev.underling.injection.component.AppComponent
 import com.nonnulldev.underling.injection.component.DaggerAppComponent
+import io.realm.Realm
 
 open class UnderlingApp : Application() {
 
@@ -15,10 +16,13 @@ open class UnderlingApp : Application() {
     @CallSuper
     override fun onCreate() {
         super.onCreate()
+
+        Realm.init(this)
+
         appComponent = createAppComponent()
     }
 
-    open protected fun createAppComponent(): AppComponent {
+    private fun createAppComponent(): AppComponent {
         return DaggerAppComponent.builder().build()
     }
 

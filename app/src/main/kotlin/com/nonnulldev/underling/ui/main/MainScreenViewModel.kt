@@ -1,11 +1,12 @@
 package com.nonnulldev.underling.ui.main
 
+import com.nonnulldev.underling.injection.scope.PerActivity
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import com.nonnulldev.underling.data.remote.DataService
 import javax.inject.Inject
 
-class MainScreenViewModel @Inject constructor(){
+@PerActivity
+class MainScreenViewModel @Inject constructor() {
 
     private var level = 0
 
