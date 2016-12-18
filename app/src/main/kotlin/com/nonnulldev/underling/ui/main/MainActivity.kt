@@ -2,6 +2,7 @@ package com.nonnulldev.underling.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -10,9 +11,11 @@ import com.nonnulldev.underling.R
 import com.nonnulldev.underling.data.model.Player
 import com.nonnulldev.underling.ui.base.BaseActivity
 import com.nonnulldev.underling.ui.create.CreateActivity
+import com.nonnulldev.underling.ui.main.recyclerview.PlayersAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+
 
 class MainActivity : BaseActivity() {
 
@@ -44,13 +47,16 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initUi() {
+
+        rvPlayers.layoutManager = LinearLayoutManager(this)
+
         viewModel.loadPlayers()
                 .subscribeOn(Schedulers.io())
                 .subscribe()
     }
 
     private fun updatePlayers(players: List<Player>) {
-
+        rvPlayers.adapter = PlayersAdapter(players)
     }
 
     @OnClick(R.id.btnCreateNewPlayer)

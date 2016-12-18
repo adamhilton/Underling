@@ -15,7 +15,6 @@ class MainScreenViewModel @Inject constructor(private val playerRepo: PlayerRepo
     fun loadPlayers(): Observable<List<Player>> {
         return Observable.just(playerRepo.getAll())
                 .doOnNext { it -> playersSubject.onNext(it) }
-
     }
 
     fun playersObservable(): Observable<List<Player>> {
