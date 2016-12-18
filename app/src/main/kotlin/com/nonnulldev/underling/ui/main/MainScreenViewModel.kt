@@ -5,18 +5,29 @@ import io.reactivex.subjects.BehaviorSubject
 import com.nonnulldev.underling.data.remote.DataService
 import javax.inject.Inject
 
-class MainScreenViewModel @Inject constructor(private val dataService: DataService){
+class MainScreenViewModel @Inject constructor(){
 
-    private val dataSubject = BehaviorSubject.create<String>()
+    private var level = 0
 
-    fun loadData(): Observable<String> {
-        return dataService
-                .getData()
-                .doOnNext { it -> dataSubject.onNext(it) }
+    private val levelSubject = BehaviorSubject.create<Int>()
+
+    fun getLevel(): Observable<Int> {
+        return Observable.just(level)
+                .doOnNext { it -> levelSubject.onNext(it) }
     }
 
-    fun dataObservable(): Observable<String> {
-        return dataSubject
+    fun removeLevel(): Observable<Int> {
+        level -= 1
+        return getLevel()
+    }
+
+    fun addLevel(): Observable<Int> {
+        level += 1
+        return getLevel()
+    }
+
+    fun levelObservable(): Observable<Int> {
+        return levelSubject
     }
 
 }

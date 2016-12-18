@@ -12,6 +12,7 @@ import com.nonnulldev.underling.UnderlingApp
 import com.nonnulldev.underling.R
 import com.nonnulldev.underling.injection.component.DaggerMainScreenComponent
 import com.nonnulldev.underling.injection.component.MainScreenComponent
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit private var mainScreenComponent: MainScreenComponent
 
-    private var level: Int = 0
+    private var subscriptions = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,17 +36,35 @@ class MainActivity : AppCompatActivity() {
         initMainScreenComponent()
         mainScreenComponent.inject(this)
 
+        initBindings()
+
         initUi()
     }
 
     private fun initUi() {
-        updateLevel()
+        viewModel.getLevel()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
 
-    private fun updateLevel() {
-        tvLevel.text = "$level"
+    private fun initBindings() {
+        subscriptions.addAll(
+                viewModel.levelObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map { it -> "$it" }
+                        .subscribe { it -> updateLevel(it) }
+        )
     }
-    
+
+    override fun onDestroy() {
+        super.onDestroy()
+        subscriptions.clear()
+    }
+
+    private fun updateLevel(level: String) {
+        tvLevel.text = level
+    }
+
     private fun initMainScreenComponent() {
         mainScreenComponent = DaggerMainScreenComponent.builder()
                 .appComponent(UnderlingApp.appComponent)
@@ -54,14 +73,16 @@ class MainActivity : AppCompatActivity() {
 
     @OnClick(R.id.btnRemoveLevel)
     fun onRemoveLevelButtonClicked() {
-        level -= 1
-        initUi()
+        viewModel.removeLevel()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
 
     @OnClick(R.id.btnAddLevel)
     fun onAddLevelButtonClicked() {
-        level += 1
-        initUi()
+        viewModel.addLevel()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
 
 }
