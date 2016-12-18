@@ -32,12 +32,6 @@ class PlayerActivity : BaseActivity() {
         initUi()
     }
 
-    private fun initUi() {
-        viewModel.getLevel()
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-    }
-
     private fun initBindings() {
         subscriptions.addAll(
                 viewModel.levelObservable()
@@ -45,6 +39,12 @@ class PlayerActivity : BaseActivity() {
                         .map { it -> "$it" }
                         .subscribe { it -> updateLevel(it) }
         )
+    }
+
+    private fun initUi() {
+        viewModel.getLevel()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
 
     private fun updateLevel(level: String) {

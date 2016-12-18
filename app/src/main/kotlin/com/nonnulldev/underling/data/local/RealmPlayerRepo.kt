@@ -19,4 +19,9 @@ class RealmPlayerRepo @Inject constructor(private val realmProvider: Provider<Re
                 .findFirst()
     }
 
+    override fun getAll(): List<Player> {
+        return realmProvider.get().where(Player::class.java)
+                .findAll()
+    }
+
 }
