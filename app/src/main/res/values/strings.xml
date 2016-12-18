@@ -2,4 +2,6 @@
     <string name="app_name">underling</string>
     <string name="get_data">Get data!</string>
     <string name="level">Level</string>
+    <string name="player_name">Player name</string>
+    <string name="create">Create!</string>
 </resources>

@@ -6,29 +6,4 @@ import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 @PerActivity
-class MainScreenViewModel @Inject constructor() {
-
-    private var level = 0
-
-    private val levelSubject = BehaviorSubject.create<Int>()
-
-    fun getLevel(): Observable<Int> {
-        return Observable.just(level)
-                .doOnNext { it -> levelSubject.onNext(it) }
-    }
-
-    fun removeLevel(): Observable<Int> {
-        level -= 1
-        return getLevel()
-    }
-
-    fun addLevel(): Observable<Int> {
-        level += 1
-        return getLevel()
-    }
-
-    fun levelObservable(): Observable<Int> {
-        return levelSubject
-    }
-
-}
+class MainScreenViewModel @Inject constructor()

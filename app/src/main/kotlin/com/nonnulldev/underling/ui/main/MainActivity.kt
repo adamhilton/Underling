@@ -13,9 +13,6 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity() {
 
-    @BindView(R.id.tvLevel)
-    lateinit var tvLevel: TextView
-
     @Inject
     lateinit protected var viewModel: MainScreenViewModel
 
@@ -26,43 +23,6 @@ class MainActivity : BaseActivity() {
         ButterKnife.bind(this)
 
         getActivityComponent().inject(this)
-
-        initBindings()
-
-        initUi()
-    }
-
-    private fun initUi() {
-        viewModel.getLevel()
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-    }
-
-    private fun initBindings() {
-        subscriptions.addAll(
-                viewModel.levelObservable()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map { it -> "$it" }
-                        .subscribe { it -> updateLevel(it) }
-        )
-    }
-
-    private fun updateLevel(level: String) {
-        tvLevel.text = level
-    }
-
-    @OnClick(R.id.btnRemoveLevel)
-    fun onRemoveLevelButtonClicked() {
-        viewModel.removeLevel()
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-    }
-
-    @OnClick(R.id.btnAddLevel)
-    fun onAddLevelButtonClicked() {
-        viewModel.addLevel()
-                .subscribeOn(Schedulers.io())
-                .subscribe()
     }
 
 }

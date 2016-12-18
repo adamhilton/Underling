@@ -7,7 +7,7 @@ import com.nonnulldev.underling.injection.component.ActivityComponent
 import com.nonnulldev.underling.injection.component.DaggerActivityComponent
 import io.reactivex.disposables.CompositeDisposable
 
-open class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity() {
 
     lateinit private var activityComponent: ActivityComponent
 
