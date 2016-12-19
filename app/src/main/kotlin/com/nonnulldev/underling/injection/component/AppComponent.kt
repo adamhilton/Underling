@@ -11,6 +11,5 @@ import com.nonnulldev.underling.injection.module.AppModule
 interface AppComponent {
 
     fun playerRepo(): PlayerRepo
-
 }
 

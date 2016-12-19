@@ -9,7 +9,7 @@ import io.realm.Realm
 open class UnderlingApp : Application() {
 
     companion object {
-        @JvmStatic lateinit  var appComponent: AppComponent
+        @JvmStatic lateinit var appComponent: AppComponent
             private set
     }
 

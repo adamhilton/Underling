@@ -4,7 +4,9 @@ import com.nonnulldev.underling.data.model.Player
 
 interface PlayerRepo {
     fun create(player: Player)
-    fun getByName(name: String)
+    fun getByName(name: String): Player
     fun getAll(): List<Player>
+    fun removeLevel(player: Player)
+    fun addLevel(player: Player)
 }
 

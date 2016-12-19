@@ -12,12 +12,13 @@ import android.widget.EditText
 import butterknife.*
 import com.nonnulldev.underling.R
 import com.nonnulldev.underling.ui.base.BaseActivity
+import com.nonnulldev.underling.ui.base.NonPlayerBaseActivity
 import com.nonnulldev.underling.ui.main.MainActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class CreateActivity : BaseActivity() {
+class CreateActivity : NonPlayerBaseActivity() {
 
     @BindView(R.id.btnCreate)
     lateinit var btnCreate: Button

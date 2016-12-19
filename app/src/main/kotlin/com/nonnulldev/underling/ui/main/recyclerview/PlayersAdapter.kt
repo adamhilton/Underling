@@ -9,9 +9,13 @@ import android.view.LayoutInflater
 import android.widget.TextView
 import butterknife.BindView
 import com.nonnulldev.underling.R
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 
 
-class PlayersAdapter(private val players: List<Player>) : RecyclerView.Adapter<PlayersAdapter.ViewHolder>() {
+class PlayersAdapter(private var players: List<Player>) : RecyclerView.Adapter<PlayersAdapter.ViewHolder>() {
+
+    private val onClickSubject = BehaviorSubject.create<String>()
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent?.context)
@@ -26,6 +30,16 @@ class PlayersAdapter(private val players: List<Player>) : RecyclerView.Adapter<P
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder?.tvPlayerName?.text = players[position].Name
+        holder?.itemView?.setOnClickListener { onClickSubject.onNext(players[position].Name) }
+    }
+
+    fun setItems(players: List<Player>) {
+        this.players = players
+        notifyDataSetChanged()
+    }
+
+    fun getPositionClicks(): Observable<String> {
+        return onClickSubject
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

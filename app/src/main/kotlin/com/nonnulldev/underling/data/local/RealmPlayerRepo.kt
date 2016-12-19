@@ -13,8 +13,8 @@ class RealmPlayerRepo @Inject constructor(private val realmProvider: Provider<Re
         realmProvider.get().executeTransaction { r -> r.copyToRealmOrUpdate(player) }
     }
 
-    override fun getByName(name: String) {
-        realmProvider.get().where(Player::class.java)
+    override fun getByName(name: String): Player {
+        return realmProvider.get().where(Player::class.java)
                 .equalTo(Player::Name.name, name)
                 .findFirst()
     }
@@ -22,6 +22,18 @@ class RealmPlayerRepo @Inject constructor(private val realmProvider: Provider<Re
     override fun getAll(): List<Player> {
         return realmProvider.get().where(Player::class.java)
                 .findAll()
+    }
+
+    override fun removeLevel(player: Player) {
+        realmProvider.get().beginTransaction()
+        player.Level -= 1
+        realmProvider.get().commitTransaction()
+    }
+
+    override fun addLevel(player: Player) {
+        realmProvider.get().beginTransaction()
+        player.Level += 1
+        realmProvider.get().commitTransaction()
     }
 
 }

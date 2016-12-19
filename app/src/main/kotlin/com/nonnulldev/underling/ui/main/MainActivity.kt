@@ -10,20 +10,25 @@ import butterknife.OnClick
 import com.nonnulldev.underling.R
 import com.nonnulldev.underling.data.model.Player
 import com.nonnulldev.underling.ui.base.BaseActivity
+import com.nonnulldev.underling.ui.base.NonPlayerBaseActivity
 import com.nonnulldev.underling.ui.create.CreateActivity
 import com.nonnulldev.underling.ui.main.recyclerview.PlayersAdapter
+import com.nonnulldev.underling.ui.player.PlayerActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : NonPlayerBaseActivity() {
 
     @BindView(R.id.rvPlayers)
     lateinit var rvPlayers: RecyclerView
 
     @Inject
     lateinit protected var viewModel: MainScreenViewModel
+
+    private val playersAdapter = PlayersAdapter(emptyList())
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +47,18 @@ class MainActivity : BaseActivity() {
         subscriptions.addAll(
                 viewModel.playersObservable()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe { it -> updatePlayers(it) }
+                        .subscribe { it -> updatePlayers(it) },
+
+                playersAdapter.getPositionClicks()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe { it -> startPlayerActivity(it) }
         )
+    }
+
+    private fun  startPlayerActivity(playerName: String) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(PlayerActivity.PLAYER_NAME, playerName)
+        startActivity(intent)
     }
 
     private fun initUi() {
@@ -56,7 +71,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updatePlayers(players: List<Player>) {
-        rvPlayers.adapter = PlayersAdapter(players)
+        playersAdapter.setItems(players)
+        rvPlayers.adapter = playersAdapter
     }
 
     @OnClick(R.id.btnCreateNewPlayer)
