@@ -5,4 +5,5 @@
     <string name="player_name">Player name</string>
     <string name="create">Create!</string>
     <string name="create_new_player">Create new player!</string>
+    <string name="gear">Gear</string>
 </resources>

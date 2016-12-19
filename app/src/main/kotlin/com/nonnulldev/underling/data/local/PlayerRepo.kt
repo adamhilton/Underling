@@ -8,5 +8,7 @@ interface PlayerRepo {
     fun getAll(): List<Player>
     fun removeLevel(player: Player)
     fun addLevel(player: Player)
+    fun removeGear(player: Player)
+    fun addGear(player: Player)
 }
 

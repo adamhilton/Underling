@@ -7,14 +7,13 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import com.nonnulldev.underling.R
 import com.nonnulldev.underling.UnderlingApp
-import com.nonnulldev.underling.data.model.Player
-import com.nonnulldev.underling.injection.component.ActivityComponent
 import com.nonnulldev.underling.injection.component.DaggerPlayerComponent
 import com.nonnulldev.underling.injection.component.PlayerComponent
 import com.nonnulldev.underling.injection.module.PlayerModule
 import com.nonnulldev.underling.ui.base.BaseActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_player.*
 import javax.inject.Inject
 
 class PlayerActivity : BaseActivity() {
@@ -25,6 +24,10 @@ class PlayerActivity : BaseActivity() {
 
     @BindView(R.id.tvLevel)
     lateinit var tvLevel: TextView
+    @BindView(R.id.tvTotalLevel)
+    lateinit var tvTotalLevel: TextView
+    @BindView(R.id.tvName)
+    lateinit var tvName: TextView
 
     lateinit private var playerComponent: PlayerComponent
 
@@ -62,18 +65,69 @@ class PlayerActivity : BaseActivity() {
                 viewModel.levelObservable()
                         .observeOn(AndroidSchedulers.mainThread())
                         .map { it -> "$it" }
-                        .subscribe { it -> updateLevel(it) }
+                        .subscribe { it ->
+                            run {
+                                updateLevelText(it)
+                                updateTotalLevel()
+                            }
+                        },
+
+                viewModel.gearObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map { it -> "$it" }
+                        .subscribe { it ->
+                            run {
+                                updateGearText(it)
+                                updateTotalLevel()
+                            }
+                        },
+
+                viewModel.totalLevelObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map { it -> "$it" }
+                        .subscribe { it -> updateTotalLevelText(it) },
+
+                viewModel.getName()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe { it -> tvName.text = it }
         )
     }
 
     private fun initUi() {
+        updateLevel()
+        updateGear()
+        updateTotalLevel()
+    }
+
+    private fun updateLevelText(level: String) {
+        tvLevel.text = level
+    }
+
+    private fun updateGearText(gear: String) {
+        tvGear.text = gear
+    }
+
+    private fun updateTotalLevelText(totalLevel: String) {
+        tvTotalLevel.text = totalLevel
+    }
+
+    private fun updateLevel() {
         viewModel.getLevel()
                 .subscribeOn(Schedulers.io())
                 .subscribe()
     }
 
-    private fun updateLevel(level: String) {
-        tvLevel.text = level
+    private fun updateGear() {
+        viewModel.getGear()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+    }
+
+    private fun updateTotalLevel() {
+        viewModel.getTotalLevel()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
 
     @OnClick(R.id.btnRemoveLevel)
@@ -86,6 +140,20 @@ class PlayerActivity : BaseActivity() {
     @OnClick(R.id.btnAddLevel)
     fun onAddLevelButtonClicked() {
         viewModel.addLevel()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+    }
+
+    @OnClick(R.id.btnRemoveGear)
+    fun onRemoveGearButtonClicked() {
+        viewModel.removeGear()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+    }
+
+    @OnClick(R.id.btnAddGear)
+    fun onAddGearButtonClicked() {
+        viewModel.addGear()
                 .subscribeOn(Schedulers.io())
                 .subscribe()
     }

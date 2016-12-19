@@ -36,4 +36,17 @@ class RealmPlayerRepo @Inject constructor(private val realmProvider: Provider<Re
         realmProvider.get().commitTransaction()
     }
 
+    override fun removeGear(player: Player) {
+        realmProvider.get().beginTransaction()
+        player.Gear -= 1
+        realmProvider.get().commitTransaction()
+    }
+
+    override fun addGear(player: Player) {
+        realmProvider.get().beginTransaction()
+        player.Gear += 1
+        realmProvider.get().commitTransaction()
+    }
+
+
 }
