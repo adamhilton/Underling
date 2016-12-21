@@ -95,12 +95,14 @@ class MainActivity : NonPlayerBaseActivity() {
     }
 
     private fun removePlayer(position: Int) {
-        viewModel.deletePlayer(players[position])
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext {
-                    rvPlayers.adapter.notifyItemRemoved(position)
-                }.subscribe()
+        subscriptions.add(
+            viewModel.deletePlayer(players[position])
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext {
+                        rvPlayers.adapter.notifyItemRemoved(position)
+                    }.subscribe()
+        )
     }
 
     @OnClick(R.id.btnCreateNewPlayer)
