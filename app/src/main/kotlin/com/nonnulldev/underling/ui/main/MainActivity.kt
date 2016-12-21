@@ -75,7 +75,7 @@ class MainActivity : NonPlayerBaseActivity() {
     }
 
     private fun createItemTouchHelperCallBack(): ItemTouchHelper.Callback {
-        return object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        return object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean {
                 return true
             }
