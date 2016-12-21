@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.nonnulldev.underling.R
 import com.nonnulldev.underling.data.model.Player
-import com.nonnulldev.underling.ui.base.BaseActivity
 import com.nonnulldev.underling.ui.base.NonPlayerBaseActivity
 import com.nonnulldev.underling.ui.create.CreateActivity
 import com.nonnulldev.underling.ui.main.recyclerview.PlayersAdapter
@@ -27,6 +27,7 @@ class MainActivity : NonPlayerBaseActivity() {
     @Inject
     lateinit protected var viewModel: MainScreenViewModel
 
+    private var players: List<Player> = emptyList()
     private val playersAdapter = PlayersAdapter(emptyList())
 
 
@@ -65,14 +66,41 @@ class MainActivity : NonPlayerBaseActivity() {
 
         rvPlayers.layoutManager = LinearLayoutManager(this)
 
+        val itemTouchHelper = ItemTouchHelper(createItemTouchHelperCallBack())
+        itemTouchHelper.attachToRecyclerView(rvPlayers)
+
         viewModel.loadPlayers()
                 .subscribeOn(Schedulers.io())
                 .subscribe()
     }
 
+    private fun createItemTouchHelperCallBack(): ItemTouchHelper.Callback {
+        return object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
+                if (viewHolder != null) {
+                    removePlayer(viewHolder.adapterPosition)
+                }
+            }
+        }
+    }
+
     private fun updatePlayers(players: List<Player>) {
+        this.players = players
         playersAdapter.setItems(players)
         rvPlayers.adapter = playersAdapter
+    }
+
+    private fun removePlayer(position: Int) {
+        viewModel.deletePlayer(players[position])
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext {
+                    rvPlayers.adapter.notifyItemRemoved(position)
+                }.subscribe()
     }
 
     @OnClick(R.id.btnCreateNewPlayer)

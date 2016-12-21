@@ -24,6 +24,12 @@ class RealmPlayerRepo @Inject constructor(private val realmProvider: Provider<Re
                 .findAll()
     }
 
+    override fun remove(player: Player) {
+        realmProvider.get().beginTransaction()
+        player.deleteFromRealm()
+        realmProvider.get().commitTransaction()
+    }
+
     override fun removeLevel(player: Player) {
         realmProvider.get().beginTransaction()
         player.Level -= 1

@@ -17,6 +17,10 @@ class MainScreenViewModel @Inject constructor(private val playerRepo: PlayerRepo
                 .doOnNext { it -> playersSubject.onNext(it) }
     }
 
+    fun deletePlayer(player: Player): Observable<Unit> {
+        return Observable.just(playerRepo.remove(player))
+    }
+
     fun playersObservable(): Observable<List<Player>> {
         return playersSubject
     }
