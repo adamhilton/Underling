@@ -42,7 +42,9 @@ class PlayerScreenViewModel @Inject constructor(
     }
 
     fun removeLevel(): Observable<Int> {
-        playerRepo.removeLevel(player)
+        if(player.Level > 0) {
+            playerRepo.removeLevel(player)
+        }
         return getLevel()
     }
 
@@ -52,7 +54,9 @@ class PlayerScreenViewModel @Inject constructor(
     }
 
     fun removeGear(): Observable<Int> {
-        playerRepo.removeGear(player)
+        if(player.Gear > 0) {
+            playerRepo.removeGear(player)
+        }
         return getGear()
     }
 
