@@ -15,6 +15,7 @@ import com.nonnulldev.underling.ui.create.CreateActivity
 import com.nonnulldev.underling.ui.main.recyclerview.PlayersAdapter
 import com.nonnulldev.underling.ui.player.PlayerActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
@@ -46,14 +47,21 @@ class MainActivity : NonPlayerBaseActivity() {
 
     private fun initBindings() {
         subscriptions.addAll(
-                viewModel.playersObservable()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe { it -> updatePlayers(it) },
-
-                playersAdapter.getPositionClicks()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe { it -> startPlayerActivity(it) }
+                playersUpdatedSubscription(),
+                playerClickedSubscription()
         )
+    }
+
+    private fun playerClickedSubscription(): Disposable? {
+        return playersAdapter.getPositionClicks()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { it -> startPlayerActivity(it) }
+    }
+
+    private fun playersUpdatedSubscription(): Disposable? {
+        return viewModel.playersObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { it -> updatePlayers(it) }
     }
 
     private fun  startPlayerActivity(playerName: String) {
@@ -110,5 +118,4 @@ class MainActivity : NonPlayerBaseActivity() {
         val intent = Intent(this, CreateActivity::class.java)
         startActivity(intent)
     }
-
 }
