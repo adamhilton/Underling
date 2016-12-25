@@ -14,43 +14,50 @@ class RealmPlayerRepo @Inject constructor(private val realmProvider: Provider<Re
     }
 
     override fun getByName(name: String): Player {
-        return realmProvider.get().where(Player::class.java)
+        return realmProvider.get().copyFromRealm(realmProvider.get().where(Player::class.java)
                 .equalTo(Player::Name.name, name)
-                .findFirst()
+                .findFirst())
     }
 
     override fun getAll(): List<Player> {
-        return realmProvider.get().where(Player::class.java)
-                .findAll()
+        return realmProvider.get().copyFromRealm(realmProvider.get().where(Player::class.java)
+                .findAll())
     }
 
     override fun remove(player: Player) {
-        realmProvider.get().beginTransaction()
-        player.deleteFromRealm()
-        realmProvider.get().commitTransaction()
+        realmProvider.get().executeTransaction { r ->
+            r.where(Player::class.java)
+                    .equalTo(Player::Name.name, player.Name)
+                    .findFirst()
+                    .deleteFromRealm()
+        }
     }
 
     override fun removeLevel(player: Player) {
         realmProvider.get().beginTransaction()
         player.Level -= 1
+        realmProvider.get().copyToRealmOrUpdate(player)
         realmProvider.get().commitTransaction()
     }
 
     override fun addLevel(player: Player) {
         realmProvider.get().beginTransaction()
         player.Level += 1
+        realmProvider.get().copyToRealmOrUpdate(player)
         realmProvider.get().commitTransaction()
     }
 
     override fun removeGear(player: Player) {
         realmProvider.get().beginTransaction()
         player.Gear -= 1
+        realmProvider.get().copyToRealmOrUpdate(player)
         realmProvider.get().commitTransaction()
     }
 
     override fun addGear(player: Player) {
         realmProvider.get().beginTransaction()
         player.Gear += 1
+        realmProvider.get().copyToRealmOrUpdate(player)
         realmProvider.get().commitTransaction()
     }
 

@@ -1,10 +1,13 @@
 package com.nonnulldev.underling.ui.main
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.View
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -17,6 +20,7 @@ import com.nonnulldev.underling.ui.player.PlayerActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
 import javax.inject.Inject
 
 
@@ -103,14 +107,22 @@ class MainActivity : NonPlayerBaseActivity() {
     }
 
     private fun removePlayer(position: Int) {
+        val removedPlayer = players[position]
         subscriptions.add(
             viewModel.deletePlayer(players[position])
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext {
-                        rvPlayers.adapter.notifyItemRemoved(position)
+                        playersAdapter.removeItem(position)
                     }.subscribe()
         )
+        Snackbar.make(findViewById(R.id.activity_main), "", Snackbar.LENGTH_LONG)
+                .setAction("Undo") {
+                    (this.players as MutableList).add(position, removedPlayer)
+                    playersAdapter.notifyItemInserted(position)
+                }
+                .setActionTextColor(Color.MAGENTA)
+                .show()
     }
 
     @OnClick(R.id.btnCreateNewPlayer)
