@@ -116,13 +116,26 @@ class MainActivity : NonPlayerBaseActivity() {
                         playersAdapter.removeItem(position)
                     }.subscribe()
         )
+        showUndoDeletedPlayerSnackbar(position, removedPlayer)
+    }
+
+    private fun showUndoDeletedPlayerSnackbar(position: Int, removedPlayer: Player) {
         Snackbar.make(findViewById(R.id.activity_main), "", Snackbar.LENGTH_LONG)
                 .setAction("Undo") {
-                    (this.players as MutableList).add(position, removedPlayer)
-                    playersAdapter.notifyItemInserted(position)
+                    subscriptions.add(
+                            viewModel.createPlayer(removedPlayer)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe { undoDeletedPlayer(position, removedPlayer) }
+                    )
                 }
                 .setActionTextColor(Color.MAGENTA)
                 .show()
+    }
+
+    private fun undoDeletedPlayer(position: Int, removedPlayer: Player) {
+        (this.players as MutableList).add(position, removedPlayer)
+        playersAdapter.notifyItemInserted(position)
     }
 
     @OnClick(R.id.btnCreateNewPlayer)
