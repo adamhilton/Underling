@@ -1,10 +1,13 @@
 package com.nonnulldev.underling.ui.main
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.View
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -17,6 +20,7 @@ import com.nonnulldev.underling.ui.player.PlayerActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
 import javax.inject.Inject
 
 
@@ -107,10 +111,30 @@ class MainActivity : NonPlayerBaseActivity() {
             viewModel.deletePlayer(players[position])
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext {
-                        rvPlayers.adapter.notifyItemRemoved(position)
+                    .doOnNext { it ->
+                        playersAdapter.removeItem(position)
+                        showUndoDeletedPlayerSnackbar(position, it)
                     }.subscribe()
         )
+    }
+
+    private fun showUndoDeletedPlayerSnackbar(position: Int, removedPlayer: Player) {
+        Snackbar.make(findViewById(R.id.activity_main), "", Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.undo)) {
+                    subscriptions.add(
+                            viewModel.createPlayer(removedPlayer)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe { undoDeletedPlayer(position, removedPlayer) }
+                    )
+                }
+                .setActionTextColor(Color.MAGENTA)
+                .show()
+    }
+
+    private fun undoDeletedPlayer(position: Int, removedPlayer: Player) {
+        (this.players as MutableList).add(position, removedPlayer)
+        playersAdapter.notifyItemInserted(position)
     }
 
     @OnClick(R.id.btnCreateNewPlayer)

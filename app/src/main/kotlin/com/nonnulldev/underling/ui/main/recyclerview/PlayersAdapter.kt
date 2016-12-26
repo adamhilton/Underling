@@ -42,6 +42,11 @@ class PlayersAdapter(private var players: List<Player>) : RecyclerView.Adapter<P
         return onClickSubject
     }
 
+    fun removeItem(position: Int) {
+        (players as MutableList).removeAt(position)
+        this.notifyItemRemoved(position)
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         @BindView(R.id.tvPlayerName)

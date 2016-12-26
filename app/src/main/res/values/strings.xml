@@ -7,4 +7,5 @@
     <string name="create_new_player">Create new player!</string>
     <string name="gear">Gear</string>
     <string name="total_level">Total Level</string>
+    <string name="undo">Undo</string>
 </resources>
