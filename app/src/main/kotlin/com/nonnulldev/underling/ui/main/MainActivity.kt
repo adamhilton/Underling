@@ -107,21 +107,20 @@ class MainActivity : NonPlayerBaseActivity() {
     }
 
     private fun removePlayer(position: Int) {
-        val removedPlayer = players[position]
         subscriptions.add(
             viewModel.deletePlayer(players[position])
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext {
+                    .doOnNext { it ->
                         playersAdapter.removeItem(position)
+                        showUndoDeletedPlayerSnackbar(position, it)
                     }.subscribe()
         )
-        showUndoDeletedPlayerSnackbar(position, removedPlayer)
     }
 
     private fun showUndoDeletedPlayerSnackbar(position: Int, removedPlayer: Player) {
         Snackbar.make(findViewById(R.id.activity_main), "", Snackbar.LENGTH_LONG)
-                .setAction("Undo") {
+                .setAction(getString(R.string.undo)) {
                     subscriptions.add(
                             viewModel.createPlayer(removedPlayer)
                                     .observeOn(AndroidSchedulers.mainThread())
